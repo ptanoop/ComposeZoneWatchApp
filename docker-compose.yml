@@ -1,0 +1,95 @@
+services:
+  postgis:
+    image: postgis/postgis:17-3.7
+    container_name: zonewatch-postgis
+    command: ["postgres", "-p", "5434"]
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: zonewatch
+      POSTGRES_USER: zonewatch
+      POSTGRES_PASSWORD: zonewatch
+    ports:
+      - "5434:5434"
+    volumes:
+      - postgis_data:/var/lib/postgresql/data
+    networks:
+      - app_net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h localhost -p 5434 -U zonewatch -d zonewatch"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend-1:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: zonewatch-backend-1
+    restart: unless-stopped
+    depends_on:
+      postgis:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgis:5434/zonewatch
+      SPRING_DATASOURCE_USERNAME: zonewatch
+      SPRING_DATASOURCE_PASSWORD: zonewatch
+    expose:
+      - "8080"
+    networks:
+      - app_net
+
+  backend-2:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: zonewatch-backend-2
+    restart: unless-stopped
+    depends_on:
+      postgis:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgis:5434/zonewatch
+      SPRING_DATASOURCE_USERNAME: zonewatch
+      SPRING_DATASOURCE_PASSWORD: zonewatch
+    expose:
+      - "8080"
+    networks:
+      - app_net
+
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: zonewatch-nginx
+    restart: unless-stopped
+    depends_on:
+      - backend-1
+      - backend-2
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      - app_net
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_BASE_URL: http://localhost:8080
+    container_name: zonewatch-frontend
+    restart: unless-stopped
+    depends_on:
+      - nginx
+    environment:
+      VITE_API_BASE_URL: http://localhost:8080
+    ports:
+      - "3000:80"
+    networks:
+      - app_net
+
+networks:
+  app_net:
+    driver: bridge
+
+volumes:
+  postgis_data:

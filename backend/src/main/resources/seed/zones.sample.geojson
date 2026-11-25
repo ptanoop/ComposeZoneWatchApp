@@ -1,0 +1,21 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": { "zoneId": "ZONE-R1", "name": "Alpha Restricted Sector", "zoneClass": "RESTRICTED" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[55.10, 25.05], [55.25, 25.05], [55.25, 25.20], [55.10, 25.20], [55.10, 25.05]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "zoneId": "ZONE-A1", "name": "Bravo Advisory Corridor", "zoneClass": "ADVISORY" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[55.26, 25.05], [55.40, 25.05], [55.40, 25.20], [55.26, 25.20], [55.26, 25.05]]]
+      }
+    }
+  ]
+}

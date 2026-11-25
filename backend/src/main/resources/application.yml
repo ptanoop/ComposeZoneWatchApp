@@ -1,0 +1,47 @@
+server:
+  port: 8080
+  compression:
+    enabled: true
+    mime-types: application/json,application/problem+json,application/x-ndjson
+
+spring:
+  application:
+    name: zone-watch-backend
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5434/zonewatch}
+    username: ${SPRING_DATASOURCE_USERNAME:zonewatch}
+    password: ${SPRING_DATASOURCE_PASSWORD:zonewatch}
+    hikari:
+      maximum-pool-size: 15
+      minimum-idle: 5
+      connection-timeout: 3000
+      idle-timeout: 300000
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+  flyway:
+    enabled: true
+    baseline-on-migrate: false
+    validate-on-migrate: true
+    locations: classpath:db/migration
+  jackson:
+    time-zone: UTC
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,metrics,prometheus
+
+app:
+  instance-id: ${INSTANCE_ID:local-1}
+  jwt:
+    secret: ${APP_JWT_SECRET:default-dev-secret-key-minimum-32-bytes-long!!}
+    expiration-seconds: 43200
+  users-file: ${APP_USERS_FILE:/app/config/seed-users.sample.json}
+  zones-file: ${APP_ZONES_FILE:/app/config/zones.sample.geojson}

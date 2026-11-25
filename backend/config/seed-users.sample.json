@@ -1,0 +1,6 @@
+[
+  { "username": "feed-ingest", "password": "ingest-secret-change-me", "role": "INGEST" },
+  { "username": "supervisor-1", "password": "super-secret-change-me", "role": "SUPERVISOR" },
+  { "username": "operator-1", "password": "op1-secret-change-me", "role": "OPERATOR" },
+  { "username": "operator-2", "password": "op2-secret-change-me", "role": "OPERATOR" }
+]
